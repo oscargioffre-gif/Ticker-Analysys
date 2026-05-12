@@ -21,8 +21,8 @@ import yfinance as yf
 # CONFIG STREAMLIT
 # =====================================================================
 st.set_page_config(
-    page_title="Quant Analyzer Pro",
-    page_icon="📊",
+    page_title="S.T.A.R. Score",
+    page_icon="⭐",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -46,7 +46,7 @@ h1 {
     font-size: 44px !important;
     color: #ffffff !important;
     font-weight: 800 !important;
-    letter-spacing: 1.5px !important;
+    letter-spacing: 0.5px !important;
     text-transform: uppercase !important;
     margin-bottom: 4px !important;
     line-height: 1.05 !important;
@@ -204,7 +204,7 @@ div[data-testid="stTextInput"] input:focus {
 
 /* MOBILE */
 @media (max-width: 768px) {
-    h1 { font-size: 32px !important; letter-spacing: 1px !important; }
+    h1 { font-size: 32px !important; letter-spacing: 0.3px !important; }
     h2 { font-size: 18px !important; margin-top: 18px !important; }
     h3 { font-size: 15px !important; }
     .main .block-container {
@@ -226,7 +226,7 @@ div[data-testid="stTextInput"] input:focus {
 
 /* VERY SMALL — Redmi Note 13 Pro portrait */
 @media (max-width: 420px) {
-    h1 { font-size: 26px !important; letter-spacing: 0.8px !important; }
+    h1 { font-size: 26px !important; letter-spacing: 0.2px !important; }
     .metric-value { font-size: 17px; }
     .metric-card { padding: 10px 8px; min-height: 64px; }
     .stButton > button { font-size: 13px; padding: 9px 10px; }
@@ -782,7 +782,7 @@ def validate_input(raw):
 # =====================================================================
 header_col1, header_col2 = st.columns([4, 1])
 with header_col1:
-    st.markdown("# 📊 QUANT ANALYZER PRO")
+    st.markdown("# ⭐ S.T.A.R. SCORE")
 with header_col2:
     st.session_state["mobile_mode"] = st.toggle(
         "📱 Mobile",
@@ -795,10 +795,14 @@ is_mobile = st.session_state["mobile_mode"]
 # Legenda badge fisso in testa
 st.markdown("""
 <div class="app-legend">
-    <div class="app-legend-label">ℹ️ Cosa fa questa app</div>
+    <div class="app-legend-label">⭐ COSA FA QUESTA APP</div>
     <div class="app-legend-body">
-        Analisi <b>tecnica + fondamentale</b> di un titolo a partire da <b>Ticker</b> o <b>ISIN</b>:
-        grafico TradingView, target analisti, RSI(14), ATR%(14) e Piotroski F-Score, con confronto fino a 4 strumenti.
+        Analisi <b>tecnica + fondamentale</b> di un titolo a partire da <b>Ticker</b> o <b>ISIN</b>, attraverso 4 moduli:
+        <b>S</b> = Sviluppo grafico (TradingView) ·
+        <b>T</b> = Target analisti ·
+        <b>A</b> = Analisi ATR/RSI ·
+        <b>R</b> = Rating Piotroski.
+        Confronto fino a 4 strumenti.
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1102,7 +1106,7 @@ else:
 
 st.markdown(
     "<div style='color:#475569;font-size:11px;margin-top:24px;text-align:center;padding-bottom:20px;'>"
-    "Quant Analyzer Pro · yfinance · TradingView<br>"
+    "S.T.A.R. Score · yfinance · TradingView<br>"
     "Solo a scopo informativo, non costituisce raccomandazione di investimento."
     "</div>",
     unsafe_allow_html=True,
