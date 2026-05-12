@@ -1,8 +1,7 @@
 """
-Quant Analyzer Pro - Single File Edition
+Quant Analyzer Pro - Single File Edition (Mobile-First)
 Single-page Streamlit app: analisi tecnica + fondamentale con risoluzione ISIN/Ticker.
-
-Tutto in un singolo file per semplicita' di deploy su Streamlit Cloud.
+Ottimizzato per smartphone (Redmi Note 13 Pro target) + desktop.
 """
 from __future__ import annotations
 
@@ -28,29 +27,58 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+st.markdown("""
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+""", unsafe_allow_html=True)
+
 CUSTOM_CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 html, body, [class*="css"], .stApp, .stMarkdown, p, div, span, label {
     font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
-    font-size: 14px !important;
 }
 .stApp { background-color: #000000; color: #e6edf3; }
 
-h1 { font-size: 28px !important; color: #ffffff !important; font-weight: 700 !important; letter-spacing: -0.5px; }
-h2 { font-size: 20px !important; color: #ffffff !important; font-weight: 600 !important; }
+h1 { font-size: 26px !important; color: #ffffff !important; font-weight: 700 !important; letter-spacing: -0.5px; margin-bottom: 4px !important; }
+h2 { font-size: 19px !important; color: #ffffff !important; font-weight: 600 !important; margin-top: 20px !important; }
 h3 { font-size: 16px !important; color: #e6edf3 !important; font-weight: 600 !important; }
+
+.main .block-container {
+    padding-top: 1rem !important;
+    padding-bottom: 2rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 100% !important;
+}
 
 .metric-card {
     background: #0a0a0a;
     border: 1px solid #1f2937;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 8px;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    min-height: 78px;
 }
-.metric-label { font-size: 12px; color: #7aa8c8; text-transform: uppercase; letter-spacing: 0.5px; }
-.metric-value { font-size: 22px; color: #ffffff; font-weight: 600; margin-top: 4px; }
+.metric-label {
+    font-size: 11px;
+    color: #7aa8c8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+.metric-value {
+    font-size: 22px;
+    color: #ffffff;
+    font-weight: 700;
+    margin-top: 4px;
+    line-height: 1.1;
+}
+.metric-sub {
+    font-size: 11px;
+    color: #7aa8c8;
+    margin-top: 3px;
+}
 .metric-status-ok { color: #22c55e; }
 .metric-status-warn { color: #f59e0b; }
 .metric-status-bad { color: #ef4444; }
@@ -60,21 +88,100 @@ h3 { font-size: 16px !important; color: #e6edf3 !important; font-weight: 600 !im
     background-color: #0099ff;
     color: #ffffff;
     border: none;
-    border-radius: 6px;
-    padding: 8px 18px;
+    border-radius: 8px;
+    padding: 10px 16px;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 14px;
+    width: 100%;
+    min-height: 44px;
 }
 .stButton > button:hover { background-color: #0077cc; }
+.stButton > button:active { background-color: #005fa3; }
 
 div[data-testid="stTextInput"] input {
     background-color: #0a0a0a;
     color: #ffffff;
     border: 1px solid #1f2937;
-    font-size: 14px !important;
+    font-size: 16px !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+    min-height: 48px;
+}
+div[data-testid="stTextInput"] input:focus {
+    border-color: #0099ff !important;
+    box-shadow: 0 0 0 1px #0099ff !important;
 }
 
-.divider { border-top: 1px solid #1f2937; margin: 24px 0; }
+.stTabs [data-baseweb="tab-list"] {
+    gap: 4px;
+    background-color: #0a0a0a;
+    border-radius: 8px;
+    padding: 4px;
+}
+.stTabs [data-baseweb="tab"] {
+    color: #7aa8c8;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+.stTabs [aria-selected="true"] {
+    background-color: #0099ff !important;
+    color: #ffffff !important;
+}
+
+.stDataFrame, .stTable { font-size: 13px !important; }
+.stDataFrame div[data-testid="stTable"] { overflow-x: auto !important; }
+
+.divider { border-top: 1px solid #1f2937; margin: 20px 0; }
+
+.info-strip {
+    background: #0a0a0a;
+    border: 1px solid #1f2937;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 8px 0 12px 0;
+    font-size: 13px;
+    color: #7aa8c8;
+    word-break: break-word;
+}
+.info-strip code {
+    background: #1f2937;
+    color: #38bdf8;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.stAlert { border-radius: 8px !important; font-size: 13px !important; }
+
+/* MOBILE */
+@media (max-width: 768px) {
+    h1 { font-size: 22px !important; }
+    h2 { font-size: 17px !important; margin-top: 18px !important; }
+    h3 { font-size: 15px !important; }
+    .main .block-container {
+        padding-left: 0.6rem !important;
+        padding-right: 0.6rem !important;
+        padding-top: 0.5rem !important;
+    }
+    .metric-card { padding: 12px 10px; min-height: 70px; }
+    .metric-label { font-size: 10px; }
+    .metric-value { font-size: 19px; }
+    .metric-sub { font-size: 10px; }
+    div[data-testid="stHorizontalBlock"] { gap: 6px !important; }
+    .stTabs [data-baseweb="tab"] { font-size: 12px; padding: 8px 8px; }
+    .info-strip { font-size: 12px; padding: 8px 10px; }
+    .stDataFrame { font-size: 12px !important; }
+}
+
+/* VERY SMALL — Redmi Note 13 Pro portrait */
+@media (max-width: 420px) {
+    h1 { font-size: 20px !important; }
+    .metric-value { font-size: 17px; }
+    .metric-card { padding: 10px 8px; min-height: 64px; }
+    .stButton > button { font-size: 13px; padding: 9px 10px; }
+}
 </style>
 """
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
@@ -288,7 +395,6 @@ def fetch_analyst_data(ticker: str) -> AnalystData:
         out.error = f"Impossibile istanziare Ticker: {e}"
         return out
 
-    # Consensus
     try:
         apt = t.analyst_price_targets
         if isinstance(apt, dict) and apt:
@@ -300,7 +406,6 @@ def fetch_analyst_data(ticker: str) -> AnalystData:
     except Exception:
         pass
 
-    # Fallback su info
     try:
         info = t.info or {}
         out.target_mean = out.target_mean or info.get("targetMeanPrice")
@@ -313,7 +418,6 @@ def fetch_analyst_data(ticker: str) -> AnalystData:
     except Exception:
         pass
 
-    # Ultimi 7 record
     try:
         ud = t.upgrades_downgrades
         if ud is not None and not ud.empty:
@@ -454,7 +558,6 @@ def compute_piotroski(ticker: str) -> PiotroskiResult:
     SHARES_t = _val(shares_row, 0); SHARES_tm1 = _val(shares_row, 1)
     CFO_t = _val(cfo_row, 0)
 
-    # Ricostruzione GP se mancante
     if GP_t is None or GP_tm1 is None:
         cogs = _get_row(is_, _ALIASES["cogs"])
         cogs_t = _val(cogs, 0); cogs_tm1 = _val(cogs, 1)
@@ -533,7 +636,7 @@ def map_to_tradingview(yf_ticker: str) -> str:
     return f"NASDAQ:{t}"
 
 
-def tradingview_html(tv_symbol: str, height: int = 520) -> str:
+def tradingview_html(tv_symbol: str, height: int = 460) -> str:
     return f"""
 <div class="tradingview-widget-container" style="height:{height}px;width:100%;">
   <div id="tv_chart_container" style="height:{height}px;width:100%;"></div>
@@ -550,9 +653,9 @@ def tradingview_html(tv_symbol: str, height: int = 520) -> str:
         "toolbar_bg": "#000000",
         "enable_publishing": false,
         "withdateranges": true,
-        "hide_side_toolbar": false,
+        "hide_side_toolbar": true,
         "allow_symbol_change": true,
-        "studies": ["RSI@tv-basicstudies", "MASimple@tv-basicstudies"],
+        "studies": ["RSI@tv-basicstudies"],
         "container_id": "tv_chart_container"
     }});
   </script>
@@ -569,6 +672,8 @@ if "last_result" not in st.session_state:
     st.session_state["last_result"] = None
 if "input_buffer" not in st.session_state:
     st.session_state["input_buffer"] = ""
+if "mobile_mode" not in st.session_state:
+    st.session_state["mobile_mode"] = False
 
 
 # =====================================================================
@@ -591,7 +696,7 @@ def run_pipeline(raw_input: str) -> dict:
 # UI HELPERS
 # =====================================================================
 def render_metric(label, value, status_class="metric-status-neutral", subtitle=""):
-    sub = f'<div style="font-size:11px;color:#7aa8c8;margin-top:2px;">{subtitle}</div>' if subtitle else ""
+    sub = f'<div class="metric-sub">{subtitle}</div>' if subtitle else ""
     st.markdown(f"""
     <div class="metric-card">
         <div class="metric-label">{label}</div>
@@ -623,32 +728,61 @@ def validate_input(raw):
 
 
 # =====================================================================
-# HEADER
+# HEADER + MOBILE TOGGLE
 # =====================================================================
-st.markdown("# 📊 Quant Analyzer Pro")
+header_col1, header_col2 = st.columns([4, 1])
+with header_col1:
+    st.markdown("# 📊 Quant Analyzer Pro")
+with header_col2:
+    st.session_state["mobile_mode"] = st.toggle(
+        "📱 Mobile",
+        value=st.session_state["mobile_mode"],
+        help="Layout verticale ottimizzato per smartphone",
+    )
+
+is_mobile = st.session_state["mobile_mode"]
+
 st.markdown(
-    "<div style='color:#7aa8c8;font-size:13px;margin-bottom:16px;'>"
-    "Analisi tecnica + fondamentale con risoluzione automatica ISIN→Ticker · TradingView · yfinance"
+    "<div style='color:#7aa8c8;font-size:13px;margin-bottom:12px;'>"
+    "Analisi tecnica + fondamentale · ISIN→Ticker auto · yfinance · TradingView"
     "</div>",
     unsafe_allow_html=True,
 )
 
-# Input bar
-col_input, col_b1, col_b2, col_b3 = st.columns([4, 1.2, 1.2, 1])
-with col_input:
+# =====================================================================
+# INPUT BAR — adattivo
+# =====================================================================
+if is_mobile:
     user_input = st.text_input(
         "Ticker o ISIN",
         value=st.session_state["input_buffer"],
-        placeholder="Es. AAPL, ENI.MI, IT0003132476, US0378331005",
+        placeholder="AAPL, ENI.MI, IT0003132476…",
         label_visibility="collapsed",
         key="ti_input",
     )
-with col_b1:
-    generate = st.button("🔍 Genera Risultato", use_container_width=True)
-with col_b2:
-    save = st.button("💾 Salva Risultato", use_container_width=True)
-with col_b3:
-    reset = st.button("♻️ Reset", use_container_width=True)
+    bcol1, bcol2, bcol3 = st.columns(3)
+    with bcol1:
+        generate = st.button("🔍 Genera", use_container_width=True, key="btn_gen")
+    with bcol2:
+        save = st.button("💾 Salva", use_container_width=True, key="btn_save")
+    with bcol3:
+        reset = st.button("♻️ Reset", use_container_width=True, key="btn_reset")
+else:
+    col_input, col_b1, col_b2, col_b3 = st.columns([4, 1.2, 1.2, 1])
+    with col_input:
+        user_input = st.text_input(
+            "Ticker o ISIN",
+            value=st.session_state["input_buffer"],
+            placeholder="Es. AAPL, ENI.MI, IT0003132476, US0378331005",
+            label_visibility="collapsed",
+            key="ti_input",
+        )
+    with col_b1:
+        generate = st.button("🔍 Genera Risultato", use_container_width=True, key="btn_gen")
+    with col_b2:
+        save = st.button("💾 Salva Risultato", use_container_width=True, key="btn_save")
+    with col_b3:
+        reset = st.button("♻️ Reset", use_container_width=True, key="btn_reset")
 
 
 # =====================================================================
@@ -656,9 +790,11 @@ with col_b3:
 # =====================================================================
 if reset:
     st.cache_data.clear()
+    mobile_save = st.session_state.get("mobile_mode", False)
     for k in ["saved", "last_result", "input_buffer"]:
         if k in st.session_state:
             del st.session_state[k]
+    st.session_state["mobile_mode"] = mobile_save
     st.rerun()
 
 if generate:
@@ -667,7 +803,7 @@ if generate:
         st.error(f"❌ {msg}")
     else:
         st.session_state["input_buffer"] = user_input.strip().upper()
-        with st.spinner("Esecuzione pipeline analitica…"):
+        with st.spinner("Esecuzione pipeline…"):
             try:
                 st.session_state["last_result"] = run_pipeline(user_input.strip().upper())
             except Exception as e:
@@ -687,71 +823,128 @@ if result is not None:
         st.error(f"❌ Risoluzione fallita: {resolved.error}")
     else:
         name = resolved.long_name or resolved.ticker
-        st.markdown(
-            f"### {name}  "
-            f"<span style='color:#7aa8c8;font-size:14px;'>"
-            f"Ticker: <code>{resolved.ticker}</code> · "
-            f"ISIN: <code>{resolved.isin or 'N/A'}</code> · "
-            f"Input: {resolved.input_type}</span>",
-            unsafe_allow_html=True,
-        )
+
+        if is_mobile:
+            st.markdown(f"### {name}")
+            st.markdown(f"""
+            <div class="info-strip">
+                Ticker: <code>{resolved.ticker}</code><br>
+                ISIN: <code>{resolved.isin or 'N/A'}</code><br>
+                Input riconosciuto: <b>{resolved.input_type}</b>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown(
+                f"### {name}  "
+                f"<span style='color:#7aa8c8;font-size:14px;'>"
+                f"Ticker: <code>{resolved.ticker}</code> · "
+                f"ISIN: <code>{resolved.isin or 'N/A'}</code> · "
+                f"Input: {resolved.input_type}</span>",
+                unsafe_allow_html=True,
+            )
 
         ind = result["indicators"]
         an = result["analyst"]
         pio = result["piotroski"]
 
-        c1, c2, c3, c4, c5 = st.columns(5)
-        with c1:
-            render_metric("Prezzo (Close)", f"{ind.close_price}" if ind and ind.close_price else "N/A")
-        with c2:
-            if ind and ind.rsi_value is not None:
-                render_metric("RSI(14)", f"{ind.rsi_value}", cls_rsi(ind.rsi_status), ind.rsi_status)
-            else:
-                render_metric("RSI(14)", "N/A")
-        with c3:
-            if ind and ind.atr_pct is not None:
-                render_metric("ATR%(14)", f"{ind.atr_pct}%", cls_atr(ind.atr_pct_status),
-                              f"Volatilità {ind.atr_pct_status}")
-            else:
-                render_metric("ATR%(14)", "N/A")
-        with c4:
-            if pio and pio.score is not None:
-                render_metric("Piotroski F-Score", f"{pio.score}/9", cls_pio(pio.score), pio.interpretation)
-            else:
-                render_metric("Piotroski F-Score", "N/A", "metric-status-neutral",
-                              (pio.error or "")[:40] if pio else "")
-        with c5:
+        # KPI
+        if is_mobile:
+            r1c1, r1c2 = st.columns(2)
+            with r1c1:
+                render_metric("Prezzo", f"{ind.close_price}" if ind and ind.close_price else "N/A")
+            with r1c2:
+                if ind and ind.rsi_value is not None:
+                    render_metric("RSI(14)", f"{ind.rsi_value}", cls_rsi(ind.rsi_status), ind.rsi_status)
+                else:
+                    render_metric("RSI(14)", "N/A")
+
+            r2c1, r2c2 = st.columns(2)
+            with r2c1:
+                if ind and ind.atr_pct is not None:
+                    render_metric("ATR%(14)", f"{ind.atr_pct}%", cls_atr(ind.atr_pct_status),
+                                  f"Vol. {ind.atr_pct_status}")
+                else:
+                    render_metric("ATR%(14)", "N/A")
+            with r2c2:
+                if pio and pio.score is not None:
+                    render_metric("Piotroski", f"{pio.score}/9", cls_pio(pio.score), pio.interpretation)
+                else:
+                    render_metric("Piotroski", "N/A")
+
             if an and an.target_mean is not None and an.current_price is not None:
                 up = upside_pct(an.target_mean, an.current_price)
                 clz = "metric-status-ok" if (up and up > 0) else "metric-status-bad"
-                render_metric("Target Mean", f"{round(an.target_mean,2)}", clz,
-                              f"Upside: {up}%" if up is not None else "")
+                render_metric("Target Mean Analisti", f"{round(an.target_mean,2)}", clz,
+                              f"Upside: {up}% · {an.num_analysts or '?'} analisti")
             else:
-                render_metric("Target Mean", "N/A")
+                render_metric("Target Mean Analisti", "N/A")
+        else:
+            c1, c2, c3, c4, c5 = st.columns(5)
+            with c1:
+                render_metric("Prezzo (Close)", f"{ind.close_price}" if ind and ind.close_price else "N/A")
+            with c2:
+                if ind and ind.rsi_value is not None:
+                    render_metric("RSI(14)", f"{ind.rsi_value}", cls_rsi(ind.rsi_status), ind.rsi_status)
+                else:
+                    render_metric("RSI(14)", "N/A")
+            with c3:
+                if ind and ind.atr_pct is not None:
+                    render_metric("ATR%(14)", f"{ind.atr_pct}%", cls_atr(ind.atr_pct_status),
+                                  f"Volatilità {ind.atr_pct_status}")
+                else:
+                    render_metric("ATR%(14)", "N/A")
+            with c4:
+                if pio and pio.score is not None:
+                    render_metric("Piotroski F-Score", f"{pio.score}/9", cls_pio(pio.score), pio.interpretation)
+                else:
+                    render_metric("Piotroski F-Score", "N/A")
+            with c5:
+                if an and an.target_mean is not None and an.current_price is not None:
+                    up = upside_pct(an.target_mean, an.current_price)
+                    clz = "metric-status-ok" if (up and up > 0) else "metric-status-bad"
+                    render_metric("Target Mean", f"{round(an.target_mean,2)}", clz,
+                                  f"Upside: {up}%" if up is not None else "")
+                else:
+                    render_metric("Target Mean", "N/A")
 
         # TradingView
-        st.markdown("## 📈 Grafico Real-time (TradingView)")
+        st.markdown("## 📈 Grafico Real-time")
         tv_sym = map_to_tradingview(resolved.ticker)
         st.caption(f"Simbolo TradingView: `{tv_sym}`")
-        components.html(tradingview_html(tv_sym, 540), height=560)
+        tv_height = 380 if is_mobile else 540
+        components.html(tradingview_html(tv_sym, tv_height), height=tv_height + 20)
 
         # Tabs
-        tab1, tab2, tab3 = st.tabs(["🎯 Rating & Target", "📒 Piotroski F-Score", "📊 Storico Indicatori"])
+        tab1, tab2, tab3 = st.tabs(["🎯 Rating", "📒 Piotroski", "📊 Storico"])
 
         with tab1:
             if an is None:
                 st.warning("⚠️ Dati analisti non disponibili.")
             else:
-                cA, cB, cC, cD = st.columns(4)
-                cA.markdown(f"**Target Low**  \n{round(an.target_low,2) if an.target_low else 'N/A'}")
-                cB.markdown(f"**Target Mean**  \n{round(an.target_mean,2) if an.target_mean else 'N/A'}")
-                cC.markdown(f"**Target High**  \n{round(an.target_high,2) if an.target_high else 'N/A'}")
-                cD.markdown(f"**N. Analisti**  \n{an.num_analysts or 'N/A'}")
+                if is_mobile:
+                    t1, t2 = st.columns(2)
+                    t1.markdown(f"**Target Low**  \n{round(an.target_low,2) if an.target_low else 'N/A'}")
+                    t2.markdown(f"**Target Mean**  \n{round(an.target_mean,2) if an.target_mean else 'N/A'}")
+                    t3, t4 = st.columns(2)
+                    t3.markdown(f"**Target High**  \n{round(an.target_high,2) if an.target_high else 'N/A'}")
+                    t4.markdown(f"**N. Analisti**  \n{an.num_analysts or 'N/A'}")
+                else:
+                    cA, cB, cC, cD = st.columns(4)
+                    cA.markdown(f"**Target Low**  \n{round(an.target_low,2) if an.target_low else 'N/A'}")
+                    cB.markdown(f"**Target Mean**  \n{round(an.target_mean,2) if an.target_mean else 'N/A'}")
+                    cC.markdown(f"**Target High**  \n{round(an.target_high,2) if an.target_high else 'N/A'}")
+                    cD.markdown(f"**N. Analisti**  \n{an.num_analysts or 'N/A'}")
+
                 if an.recommendation_key:
                     st.markdown(f"**Consensus:** `{an.recommendation_key.upper()}`")
+
                 st.markdown("#### Ultime 7 azioni analisti")
                 if an.recent_actions is not None and not an.recent_actions.empty:
-                    st.dataframe(an.recent_actions, use_container_width=True, hide_index=True)
+                    if is_mobile:
+                        cols = ["Agenzia", "Azione", "Rating", "Data"]
+                        st.dataframe(an.recent_actions[cols], use_container_width=True, hide_index=True)
+                    else:
+                        st.dataframe(an.recent_actions, use_container_width=True, hide_index=True)
                 else:
                     st.info("Storico upgrades/downgrades non disponibile.")
 
@@ -761,21 +954,21 @@ if result is not None:
             else:
                 st.markdown(f"### F-Score: **{pio.score} / 9** — {pio.interpretation}")
                 labels = {
-                    "1_ROA_positivo": "1. ROA > 0 (Redditività)",
-                    "2_CFO_positivo": "2. CFO > 0 (Redditività)",
-                    "3_DeltaROA_positivo": "3. ΔROA > 0 (Redditività)",
-                    "4_Accruals_CFO_gt_NI": "4. CFO > Net Income (Qualità utili)",
-                    "5_DeltaLeverage_negativo": "5. ΔLeverage < 0 (Leva)",
-                    "6_DeltaCurrentRatio_positivo": "6. ΔCurrent Ratio > 0 (Liquidità)",
-                    "7_No_emissione_azioni": "7. No emissione azioni (Equity)",
-                    "8_DeltaGrossMargin_positivo": "8. ΔGross Margin > 0 (Efficienza)",
-                    "9_DeltaAssetTurnover_positivo": "9. ΔAsset Turnover > 0 (Efficienza)",
+                    "1_ROA_positivo": "1. ROA > 0",
+                    "2_CFO_positivo": "2. CFO > 0",
+                    "3_DeltaROA_positivo": "3. ΔROA > 0",
+                    "4_Accruals_CFO_gt_NI": "4. CFO > Net Income",
+                    "5_DeltaLeverage_negativo": "5. ΔLeverage < 0",
+                    "6_DeltaCurrentRatio_positivo": "6. ΔCurrent Ratio > 0",
+                    "7_No_emissione_azioni": "7. No emissione azioni",
+                    "8_DeltaGrossMargin_positivo": "8. ΔGross Margin > 0",
+                    "9_DeltaAssetTurnover_positivo": "9. ΔAsset Turnover > 0",
                 }
-                rows = [{"Criterio": lab, "Pass": "✅" if pio.details.get(k, 0) == 1 else "❌",
-                         "Score": pio.details.get(k, 0)} for k, lab in labels.items()]
+                rows = [{"Criterio": lab, "Pass": "✅" if pio.details.get(k, 0) == 1 else "❌"}
+                        for k, lab in labels.items()]
                 st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
-                with st.expander("Valori grezzi utilizzati nel calcolo"):
+                with st.expander("Valori grezzi"):
                     raw_df = pd.DataFrame([
                         {"Metrica": k, "Valore": (round(v, 6) if isinstance(v, float) else v)}
                         for k, v in pio.raw_values.items() if v is not None
@@ -784,7 +977,9 @@ if result is not None:
 
         with tab3:
             if ind and ind.history_df is not None:
-                df = ind.history_df.tail(60)[["open", "high", "low", "close", "volume"]].copy()
+                n_rows = 30 if is_mobile else 60
+                df = ind.history_df.tail(n_rows)[["open", "high", "low", "close", "volume"]].copy()
+                df = df.round(2)
                 df.index = df.index.strftime("%Y-%m-%d")
                 st.dataframe(df.iloc[::-1], use_container_width=True)
             else:
@@ -796,7 +991,7 @@ if result is not None:
 # =====================================================================
 if save:
     if st.session_state.get("last_result") is None:
-        st.warning("⚠️ Nessun risultato da salvare. Esegui prima 'Genera Risultato'.")
+        st.warning("⚠️ Nessun risultato da salvare. Esegui prima 'Genera'.")
     else:
         res = st.session_state["last_result"]
         resolved = res["resolved"]
@@ -806,19 +1001,19 @@ if save:
             ind = res["indicators"]; an = res["analyst"]; pio = res["piotroski"]
             snap = {
                 "Ticker": resolved.ticker,
-                "Nome": (resolved.long_name or resolved.ticker)[:30],
-                "ISIN": resolved.isin or "N/A",
+                "Nome": (resolved.long_name or resolved.ticker)[:25],
                 "Prezzo": ind.close_price if ind else None,
-                "RSI(14)": ind.rsi_value if ind else None,
-                "RSI Status": ind.rsi_status if ind else "N/A",
+                "RSI": ind.rsi_value if ind else None,
+                "RSI St.": ind.rsi_status if ind else "N/A",
                 "ATR%": ind.atr_pct if ind else None,
                 "Vol.": ind.atr_pct_status if ind else "N/A",
                 "F-Score": pio.score if pio else None,
-                "Pio. Interpr.": pio.interpretation if pio else "N/A",
-                "Target Mean": round(an.target_mean, 2) if (an and an.target_mean) else None,
+                "Pio.": pio.interpretation if pio else "N/A",
+                "Target": round(an.target_mean, 2) if (an and an.target_mean) else None,
                 "Upside%": upside_pct(an.target_mean, an.current_price) if an else None,
-                "N. Analisti": an.num_analysts if an else None,
+                "Analisti": an.num_analysts if an else None,
                 "Consensus": (an.recommendation_key or "N/A") if an else "N/A",
+                "ISIN": resolved.isin or "N/A",
                 "Snapshot": res["timestamp"],
             }
             saved = [s for s in st.session_state["saved"] if s["Ticker"] != snap["Ticker"]]
@@ -835,20 +1030,26 @@ st.markdown("## 🔬 Tabella di Confronto")
 
 saved = st.session_state.get("saved", [])
 if not saved:
-    st.info("Nessun ticker salvato. Usa **💾 Salva Risultato** dopo aver generato un'analisi (max 4 strumenti).")
+    st.info("Nessun ticker salvato. Usa **💾 Salva** dopo aver generato un'analisi (max 4 strumenti).")
 else:
     df = pd.DataFrame(saved).set_index("Ticker").T
-    st.dataframe(df, use_container_width=True)
-    col_a, _ = st.columns([1, 5])
-    with col_a:
+    st.dataframe(df, use_container_width=True, height=min(560, 35 * len(df) + 40))
+
+    if is_mobile:
         if st.button("🗑️ Svuota confronto", use_container_width=True):
             st.session_state["saved"] = []
             st.rerun()
+    else:
+        col_a, _ = st.columns([1, 5])
+        with col_a:
+            if st.button("🗑️ Svuota confronto", use_container_width=True):
+                st.session_state["saved"] = []
+                st.rerun()
 
 st.markdown(
-    "<div style='color:#475569;font-size:11px;margin-top:32px;text-align:center;'>"
-    "Quant Analyzer Pro · Dati: yfinance · Grafici: TradingView · "
-    "I valori sono a scopo informativo, non costituiscono raccomandazione di investimento."
+    "<div style='color:#475569;font-size:11px;margin-top:24px;text-align:center;padding-bottom:20px;'>"
+    "Quant Analyzer Pro · yfinance · TradingView<br>"
+    "Solo a scopo informativo, non costituisce raccomandazione di investimento."
     "</div>",
     unsafe_allow_html=True,
 )
