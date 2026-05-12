@@ -5,9 +5,10 @@ Ottimizzato per smartphone (Redmi Note 13 Pro target) + desktop.
 """
 from __future__ import annotations
 
+import json
 import re
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 import numpy as np
@@ -15,6 +16,13 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 import yfinance as yf
+
+# Persistenza cross-session via cookie del browser
+try:
+    from streamlit_cookies_controller import CookieController
+    _COOKIES_AVAILABLE = True
+except ImportError:
+    _COOKIES_AVAILABLE = False
 
 
 # =====================================================================
@@ -724,6 +732,89 @@ if "input_buffer" not in st.session_state:
     st.session_state["input_buffer"] = ""
 if "mobile_mode" not in st.session_state:
     st.session_state["mobile_mode"] = False
+if "hydrated_from_cookie" not in st.session_state:
+    st.session_state["hydrated_from_cookie"] = False
+
+
+# =====================================================================
+# PERSISTENZA CROSS-SESSION (cookie del browser)
+# =====================================================================
+COOKIE_NAME = "star_score_saved_v1"
+COOKIE_EXPIRY_DAYS = 365
+
+if _COOKIES_AVAILABLE:
+    cookie_controller = CookieController(key="star_score_cookies")
+else:
+    cookie_controller = None
+
+
+def _serialize_saved(saved_list: list) -> str:
+    """Converte la lista snapshot in stringa JSON compatta."""
+    try:
+        return json.dumps(saved_list, default=str, separators=(",", ":"))
+    except Exception:
+        return "[]"
+
+
+def _deserialize_saved(raw: str) -> list:
+    """Parse del JSON cookie -> lista snapshot. Robusto ad errori."""
+    if not raw:
+        return []
+    try:
+        data = json.loads(raw)
+        if isinstance(data, list):
+            # Limito a 4 per sicurezza anche se il cookie ne contenesse di più
+            return data[-4:]
+        return []
+    except Exception:
+        return []
+
+
+def load_saved_from_cookie() -> None:
+    """Idratazione one-shot: legge il cookie e popola session_state['saved']."""
+    if st.session_state["hydrated_from_cookie"]:
+        return
+    if cookie_controller is None:
+        st.session_state["hydrated_from_cookie"] = True
+        return
+    try:
+        raw = cookie_controller.get(COOKIE_NAME)
+        if raw:
+            loaded = _deserialize_saved(raw)
+            if loaded and not st.session_state["saved"]:
+                st.session_state["saved"] = loaded
+        st.session_state["hydrated_from_cookie"] = True
+    except Exception:
+        st.session_state["hydrated_from_cookie"] = True
+
+
+def persist_saved_to_cookie() -> None:
+    """Scrive lo stato corrente nel cookie del browser."""
+    if cookie_controller is None:
+        return
+    try:
+        payload = _serialize_saved(st.session_state.get("saved", []))
+        cookie_controller.set(
+            COOKIE_NAME,
+            payload,
+            expires=datetime.now() + timedelta(days=COOKIE_EXPIRY_DAYS),
+        )
+    except Exception:
+        pass
+
+
+def clear_cookie() -> None:
+    """Cancella completamente il cookie del browser (pulsante cestino)."""
+    if cookie_controller is None:
+        return
+    try:
+        cookie_controller.remove(COOKIE_NAME)
+    except Exception:
+        pass
+
+
+# Carica i salvataggi del giorno/giorni precedenti dal cookie al primo run
+load_saved_from_cookie()
 
 
 # =====================================================================
@@ -849,10 +940,15 @@ else:
 if reset:
     st.cache_data.clear()
     mobile_save = st.session_state.get("mobile_mode", False)
-    for k in ["saved", "last_result", "input_buffer"]:
+    saved_backup = st.session_state.get("saved", [])
+    hydrated_backup = st.session_state.get("hydrated_from_cookie", True)
+    for k in ["last_result", "input_buffer"]:
         if k in st.session_state:
             del st.session_state[k]
+    # Preservo: mobile_mode, saved (cestino dedicato), hydrated flag
     st.session_state["mobile_mode"] = mobile_save
+    st.session_state["saved"] = saved_backup
+    st.session_state["hydrated_from_cookie"] = hydrated_backup
     st.rerun()
 
 if generate:
@@ -1077,6 +1173,7 @@ if save:
             saved = [s for s in st.session_state["saved"] if s["Ticker"] != snap["Ticker"]]
             saved.append(snap)
             st.session_state["saved"] = saved[-4:]
+            persist_saved_to_cookie()  # << persistenza cross-session
             st.success(f"✅ Salvato {snap['Ticker']} ({len(st.session_state['saved'])}/4).")
 
 
@@ -1085,6 +1182,10 @@ if save:
 # =====================================================================
 st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 st.markdown("## 🔬 Tabella di Confronto")
+if _COOKIES_AVAILABLE:
+    st.caption("💾 I salvataggi persistono tra sessioni (cookie del browser). Usa il cestino per cancellarli.")
+else:
+    st.caption("⚠️ Persistenza non disponibile: il modulo `streamlit-cookies-controller` non è installato.")
 
 saved = st.session_state.get("saved", [])
 if not saved:
@@ -1096,12 +1197,14 @@ else:
     if is_mobile:
         if st.button("🗑️ Svuota confronto", use_container_width=True):
             st.session_state["saved"] = []
+            clear_cookie()
             st.rerun()
     else:
         col_a, _ = st.columns([1, 5])
         with col_a:
             if st.button("🗑️ Svuota confronto", use_container_width=True):
                 st.session_state["saved"] = []
+                clear_cookie()
                 st.rerun()
 
 st.markdown(
