@@ -33,16 +33,63 @@ st.markdown("""
 
 CUSTOM_CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap');
 
 html, body, [class*="css"], .stApp, .stMarkdown, p, div, span, label {
     font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
 }
 .stApp { background-color: #000000; color: #e6edf3; }
 
-h1 { font-size: 26px !important; color: #ffffff !important; font-weight: 700 !important; letter-spacing: -0.5px; margin-bottom: 4px !important; }
-h2 { font-size: 19px !important; color: #ffffff !important; font-weight: 600 !important; margin-top: 20px !important; }
-h3 { font-size: 16px !important; color: #e6edf3 !important; font-weight: 600 !important; }
+/* Titolo principale stile "MILANO SCREENER": font display, all-caps, condensed */
+h1 {
+    font-family: 'Syne', 'Inter', sans-serif !important;
+    font-size: 44px !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+    margin-bottom: 4px !important;
+    line-height: 1.05 !important;
+}
+h2 {
+    font-family: 'Syne', 'Inter', sans-serif !important;
+    font-size: 22px !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    margin-top: 22px !important;
+    letter-spacing: 0.3px !important;
+}
+h3 {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 16px !important;
+    color: #e6edf3 !important;
+    font-weight: 700 !important;
+}
+
+/* Legenda badge fisso in testa */
+.app-legend {
+    background: linear-gradient(90deg, rgba(0,153,255,0.12) 0%, rgba(0,153,255,0.04) 100%);
+    border: 1px solid #0099ff;
+    border-left: 4px solid #0099ff;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 4px 0 18px 0;
+}
+.app-legend-label {
+    font-size: 11px;
+    color: #38bdf8;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+}
+.app-legend-body {
+    font-size: 14px;
+    color: #e6edf3;
+    line-height: 1.5;
+    font-weight: 500;
+}
+.app-legend-body b { color: #ffffff; font-weight: 700; }
 
 .main .block-container {
     padding-top: 1rem !important;
@@ -157,8 +204,8 @@ div[data-testid="stTextInput"] input:focus {
 
 /* MOBILE */
 @media (max-width: 768px) {
-    h1 { font-size: 22px !important; }
-    h2 { font-size: 17px !important; margin-top: 18px !important; }
+    h1 { font-size: 32px !important; letter-spacing: 1px !important; }
+    h2 { font-size: 18px !important; margin-top: 18px !important; }
     h3 { font-size: 15px !important; }
     .main .block-container {
         padding-left: 0.6rem !important;
@@ -173,14 +220,17 @@ div[data-testid="stTextInput"] input:focus {
     .stTabs [data-baseweb="tab"] { font-size: 12px; padding: 8px 8px; }
     .info-strip { font-size: 12px; padding: 8px 10px; }
     .stDataFrame { font-size: 12px !important; }
+    .app-legend { padding: 10px 12px; }
+    .app-legend-body { font-size: 13px; }
 }
 
 /* VERY SMALL — Redmi Note 13 Pro portrait */
 @media (max-width: 420px) {
-    h1 { font-size: 20px !important; }
+    h1 { font-size: 26px !important; letter-spacing: 0.8px !important; }
     .metric-value { font-size: 17px; }
     .metric-card { padding: 10px 8px; min-height: 64px; }
     .stButton > button { font-size: 13px; padding: 9px 10px; }
+    .app-legend-body { font-size: 12.5px; line-height: 1.45; }
 }
 </style>
 """
@@ -732,7 +782,7 @@ def validate_input(raw):
 # =====================================================================
 header_col1, header_col2 = st.columns([4, 1])
 with header_col1:
-    st.markdown("# 📊 Quant Analyzer Pro")
+    st.markdown("# 📊 QUANT ANALYZER PRO")
 with header_col2:
     st.session_state["mobile_mode"] = st.toggle(
         "📱 Mobile",
@@ -742,12 +792,16 @@ with header_col2:
 
 is_mobile = st.session_state["mobile_mode"]
 
-st.markdown(
-    "<div style='color:#7aa8c8;font-size:13px;margin-bottom:12px;'>"
-    "Analisi tecnica + fondamentale · ISIN→Ticker auto · yfinance · TradingView"
-    "</div>",
-    unsafe_allow_html=True,
-)
+# Legenda badge fisso in testa
+st.markdown("""
+<div class="app-legend">
+    <div class="app-legend-label">ℹ️ Cosa fa questa app</div>
+    <div class="app-legend-body">
+        Analisi <b>tecnica + fondamentale</b> di un titolo a partire da <b>Ticker</b> o <b>ISIN</b>:
+        grafico TradingView, target analisti, RSI(14), ATR%(14) e Piotroski F-Score, con confronto fino a 4 strumenti.
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # =====================================================================
 # INPUT BAR — adattivo
